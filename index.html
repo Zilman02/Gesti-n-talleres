@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ruiz Automotores - Gestión de Taller</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Encabezado y Selector de Rol -->
+        <header class="app-header">
+            <div class="brand">
+                <h1>Ruiz Automotores</h1>
+                <span id="connectionStatus" class="badge offline">Modo Offline Activo</span>
+            </div>
+            <div class="role-selector">
+                <button type="button" id="btnAdminView" class="role-btn active" onclick="switchView('admin')">Panel Taller</button>
+                <button type="button" id="btnClientView" class="role-btn" onclick="switchView('client')">Vista Cliente</button>
+            </div>
+        </header>
+
+        <!-- VISTA TALLER (ADMINISTRADOR) -->
+        <main id="adminView" class="view-section active">
+            <!-- Resumen Mensual -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Órdenes del Mes</span>
+                    <strong id="statTotalOrders" class="stat-value">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">En Reparación</span>
+                    <strong id="statPendingOrders" class="stat-value">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Facturación Mensual</span>
+                    <strong id="statTotalRevenue" class="stat-value">$0</strong>
+                </div>
+            </section>
+
+            <!-- Formulario de Nueva Orden -->
+            <section class="card">
+                <h2>Nueva Orden de Trabajo</h2>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <h3>1. Datos del Cliente</h3>
+                        <input type="text" id="clientName" placeholder="Nombre y Apellido" required>
+                        <input type="tel" id="clientPhone" placeholder="Teléfono / WhatsApp" required>
+                    </div>
+
+                    <div class="form-group">
+                        <h3>2. Datos del Vehículo</h3>
+                        <div class="input-row">
+                            <input type="text" id="carModel" placeholder="Marca y Modelo (ej. Hilux 2020)" required>
+                            <input type="text" id="carPlate" placeholder="Patente / Dominio" required style="text-transform: uppercase;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3>3. Detalle del Servicio</h3>
+                        <textarea id="serviceDetails" rows="3" placeholder="Descripción del trabajo o falla..." required></textarea>
+                        <div class="input-row">
+                            <input type="number" id="serviceCost" placeholder="Presupuesto ($)" min="0" step="0.01" required>
+                            <select id="serviceStatus">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Taller">En Taller</option>
+                                <option value="Listo para Entregar">Listo para Entregar</option>
+                                <option value="Entregado">Entregado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Guardar Orden de Trabajo</button>
+                </form>
+            </section>
+
+            <!-- Listado de Órdenes y Exportación a Excel -->
+            <section class="card">
+                <div class="section-header">
+                    <h2>Registro de Órdenes</h2>
+                    <button type="button" id="btnExportExcel" class="btn-excel" onclick="exportToExcel()">
+                        Descargar Excel (CSV)
+                    </button>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar por patente, cliente o modelo..." oninput="renderOrders()">
+                </div>
+
+                <div id="ordersList" class="orders-list">
+                    <!-- Las órdenes se cargan aquí automáticamente -->
+                </div>
+            </section>
+        </main>
+
+        <!-- VISTA CLIENTE (CONSULTA POR PATENTE) -->
+        <main id="clientView" class="view-section" style="display: none;">
+            <section class="card client-search-card">
+                <h2>Seguimiento de Vehículo</h2>
+                <p>Ingresa la patente de tu vehículo para consultar el estado de reparación en tiempo real.</p>
+                <div class="input-row">
+                    <input type="text" id="clientSearchPlate" placeholder="Ej: AB123CD" style="text-transform: uppercase;">
+                    <button type="button" class="btn-primary" onclick="searchClientOrder()">Consultar</button>
+                </div>
+                <div id="clientResult" class="client-result"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Archivo de lógica -->
+    <script src="app.js"></script>
+</body>
+</html>
